@@ -15,5 +15,6 @@
  */
 /**
  * Tools for getting/setting properties
+ * 提供了 PropertyCopier、PropertyNamer、PropertyTokenizer 三个属性相关的工具类。
  */
 package org.apache.ibatis.reflection.property;

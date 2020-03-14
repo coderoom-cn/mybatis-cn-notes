@@ -31,9 +31,17 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+/**
+ * 单元测试类
+ */
 class AutoConstructorTest {
   private static SqlSessionFactory sqlSessionFactory;
 
+  /**
+   * 创建 SqlSessionFactory 对象，基于当前文件夹下的mybatis-config.xml配置文件。
+   * 初始化数据到内存数据库，基于CreateDB.sqlSQL 文件。
+   * @throws Exception
+   */
   @BeforeAll
   static void setUp() throws Exception {
     // create a SqlSessionFactory

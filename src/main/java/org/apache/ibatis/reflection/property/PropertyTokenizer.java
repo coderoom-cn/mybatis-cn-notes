@@ -20,7 +20,7 @@ import java.util.Iterator;
 /**
  * 属性分解器，属性分解为标记，迭代器模式 如person[0].birthdate.year，将依次取
  * 得person[0], birthdate, year
- * 字符串表达式解析封装类
+ * 字符串表达式解析封装类[字符串迭代器]
  * @author Clinton Begin
  */
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {

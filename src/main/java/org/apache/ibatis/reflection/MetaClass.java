@@ -30,6 +30,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
  * 元信息
  * MetaClass是Mybatis对类级别的元信息的封装和处理，通过与属性工具类的结合， 实现了对复杂表达式的解析，实现了获取指定描述信息的功能
  * MetaClass是mybatis用于简化反射操作的封装类。只是对类附加一下更加便捷描述的功能，Meta一般表示对一个东西的描述信息
+ * 基于 Reflector 和 PropertyTokenizer ，提供对指定类的各种骚操作。
  * @author Clinton Begin
  */
 public class MetaClass {
@@ -39,6 +40,8 @@ public class MetaClass {
 
   /**
    * MetaClass 构造函数
+   * 通过构造方法，我们可以看出，一个 MetaClass 对象，对应一个 Class 对象。
+   *
    * @param type
    * @param reflectorFactory
    */
@@ -53,23 +56,36 @@ public class MetaClass {
 
   /**
    * 通过属性名称， 获取属性的 MetaClass (解决成员变量是类的情况)
+   * 创建类的指定属性的类的 MetaClass 对象。
+   *
    * @param name
    * @return
    */
   public MetaClass metaClassForProperty(String name) {
+    // 获得属性的类
     Class<?> propType = reflector.getGetterType(name);
+    // // 创建 MetaClass 对象
     return MetaClass.forClass(propType, reflectorFactory);
   }
 
+  /**
+   * 根据表达式，获得属性。
+   *
+   * @param name
+   * @return
+   */
   public String findProperty(String name) {
+    // 构建属性
     StringBuilder prop = buildProperty(name, new StringBuilder());
     return prop.length() > 0 ? prop.toString() : null;
   }
 
   public String findProperty(String name, boolean useCamelCaseMapping) {
+    //  下划线转驼峰
     if (useCamelCaseMapping) {
       name = name.replace("_", "");
     }
+    // 获得属性
     return findProperty(name);
   }
 
@@ -112,7 +128,14 @@ public class MetaClass {
     return MetaClass.forClass(propType, reflectorFactory);
   }
 
+  /**
+   * 获得指定属性的 getting 方法的返回值的类型。
+   *
+   * @param prop
+   * @return
+   */
   private Class<?> getGetterType(PropertyTokenizer prop) {
+    // 创建 PropertyTokenizer 对象，对 name 进行分词
     Class<?> type = reflector.getGetterType(prop.getName());
     if (prop.getIndex() != null && Collection.class.isAssignableFrom(type)) {
       Type returnType = getGenericGetterType(prop.getName());
@@ -164,7 +187,14 @@ public class MetaClass {
     }
   }
 
+  /**
+   * 判断指定属性是否有 getting 方法
+   *
+   * @param name
+   * @return
+   */
   public boolean hasGetter(String name) {
+    // 创建 PropertyTokenizer 对象，对 name 进行分词
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
       if (reflector.hasGetter(prop.getName())) {
@@ -190,12 +220,13 @@ public class MetaClass {
    * 该类中， 最重要的方法
    * 解析属性表达式
    * 去寻找reflector中是否有对应的的属性
+   * 构建属性
    * @param name
    * @param builder
    * @return
    */
   private StringBuilder buildProperty(String name, StringBuilder builder) {
-    // 解析属性表达式
+    // 解析属性表达式，创建 PropertyTokenizer 对象，对 name 进行分词
     PropertyTokenizer prop = new PropertyTokenizer(name);
     // 是否有子表达式
     if (prop.hasNext()) {

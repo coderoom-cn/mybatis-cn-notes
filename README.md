@@ -9,16 +9,16 @@ MyBatis SQL Mapper Framework for Java[ Mybatis-3 中文注释]
 [![Stack Overflow](http://img.shields.io/:stack%20overflow-mybatis-brightgreen.svg)](http://stackoverflow.com/questions/tagged/mybatis)
 [![Project Stats](https://www.openhub.net/p/mybatis/widgets/project_thin_badge.gif)](https://www.openhub.net/p/mybatis)
 
-[mybatis](http://mybatis.github.io/images/mybatis-logo.png)
+![mybatis](http://mybatis.github.io/images/mybatis-logo.png)
 
 ### 相关工具
 #### 画图工具
 Diagram Designer
 
 -------------
-Mybatis整体架构
+## Mybatis整体架构
 
-|   `接口层`       |           sqlsession                    |
+|  `API接口层`       |           sqlsession                    |
 | -------------    | ------------------------------ |
 | `核心处理层`     | `配置解析` `参数映射`  `SQL解析`         |
 |                  | `SQL执行`  `结果集映射`  `插件`    |
@@ -52,5 +52,10 @@ MyBatis中提供了一级缓存和二级缓存，而这两级缓存都是依赖�
 ### 核心层
 Drawing[核心接口层]
 
-###接口层
+### 接口层
 接口层相对简单，其核心是SqlSession接口，该接口中定义了MyBatis暴露给应用程序调用的API，也就是上层应用与MyBatis交互的桥梁。
+
+##调试环境
+参考 AutoConstructorTest
+
+[参考01](http://)

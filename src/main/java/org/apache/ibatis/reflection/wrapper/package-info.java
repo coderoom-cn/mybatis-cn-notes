@@ -15,5 +15,6 @@
  */
 /**
  * Object wrappers.
+ * 对象包装器
  */
 package org.apache.ibatis.reflection.wrapper;

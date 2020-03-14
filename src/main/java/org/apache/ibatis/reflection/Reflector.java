@@ -112,20 +112,25 @@ public class Reflector {
   }
 
   // 如果方法返回值是父类相同实体方法返回值类型的子类， 则就会导致两个方法是同一个方法， 但是签名不同。 因此， 需要解决此类冲突。
-  // 子类重写方法的返回类型必须与父类相同或者是父类返回类型的子类型
+  // 子类重写方法的返回类型必须与父类相同或者是父类返回类型的子类型（父类的一个方法的返回值为 List ，子类对该方法的返回值可以覆写为 ArrayList 。此时为同一方法需要处理。）
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
+    // 遍历每个属性，查找其最匹配的方法。因为子类可以覆写父类的方法，所以一个属性，可能对应多个 getting 方法
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
-      Method winner = null;
+      Method winner = null; // 最匹配的方法
       String propName = entry.getKey();
       boolean isAmbiguous = false;
       for (Method candidate : entry.getValue()) {
+        // winner 为空，说明 candidate 为最匹配的方法
         if (winner == null) {
           winner = candidate;
           continue;
         }
+        // 基于返回类型比较
         Class<?> winnerType = winner.getReturnType();
         Class<?> candidateType = candidate.getReturnType();
+        // 类型相同
         if (candidateType.equals(winnerType)) {
+          // 返回值了，选哪个相同，应该在 getClassMethods 方法中，已经合并。所以抛出 ReflectionException 异常
           if (!boolean.class.equals(candidateType)) {
             isAmbiguous = true;
             break;
@@ -134,6 +139,7 @@ public class Reflector {
           }
         } else if (candidateType.isAssignableFrom(winnerType)) {
           // OK getter type is descendant
+          // 符合选择子类。因为子类可以修改放大返回值。例如，父类的一个方法的返回值为 List ，子类对该方法的返回值可以覆写为 ArrayList 。
         } else if (winnerType.isAssignableFrom(candidateType)) {
           winner = candidate;
         } else {
@@ -248,7 +254,13 @@ public class Reflector {
     return result;
   }
 
+  /**
+   * 实际上，它是addGetMethods(...)和addSetMethods(...)方法的补充，因为有些 field ，
+   * 不存在对应的 setting 或 getting 方法，所以直接使用对应的 field，而不是方法。
+   * @param clazz
+   */
   private void addFields(Class<?> clazz) {
+    // 获得所有 field
     Field[] fields = clazz.getDeclaredFields();
     for (Field field : fields) {
       if (!setMethods.containsKey(field.getName())) {
