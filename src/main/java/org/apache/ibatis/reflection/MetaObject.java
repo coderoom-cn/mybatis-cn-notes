@@ -28,10 +28,13 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
+ * 元对象
+ * 只是对对象附加一下更加便捷描述的功能，Meta一般表示对一个东西的描述信息
  * @author Clinton Begin
  */
 public class MetaObject {
 
+  // 元素对象，当前类对象
   private final Object originalObject;
   private final ObjectWrapper objectWrapper;
   private final ObjectFactory objectFactory;
@@ -45,14 +48,19 @@ public class MetaObject {
     this.reflectorFactory = reflectorFactory;
 
     if (object instanceof ObjectWrapper) {
+      //如果参数对象实现了ObjectWrapper
       this.objectWrapper = (ObjectWrapper) object;
     } else if (objectWrapperFactory.hasWrapperFor(object)) {
+      //如果objectWrapperFactory已经包装了对象，对用objectWrapperFactory的getWrapperFor
       this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
     } else if (object instanceof Map) {
+      //是一个Map对象，使用mybatis的MapWrapper
       this.objectWrapper = new MapWrapper(this, (Map) object);
     } else if (object instanceof Collection) {
+      //是一个CollectionWrapper对象
       this.objectWrapper = new CollectionWrapper(this, (Collection) object);
     } else {
+      //其他默认使用BeanWrapper
       this.objectWrapper = new BeanWrapper(this, object);
     }
   }

@@ -27,6 +27,9 @@ import org.apache.ibatis.reflection.invoker.MethodInvoker;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
+ * 元信息
+ * MetaClass是Mybatis对类级别的元信息的封装和处理，通过与属性工具类的结合， 实现了对复杂表达式的解析，实现了获取指定描述信息的功能
+ * MetaClass是mybatis用于简化反射操作的封装类。只是对类附加一下更加便捷描述的功能，Meta一般表示对一个东西的描述信息
  * @author Clinton Begin
  */
 public class MetaClass {
@@ -34,6 +37,11 @@ public class MetaClass {
   private final ReflectorFactory reflectorFactory;
   private final Reflector reflector;
 
+  /**
+   * MetaClass 构造函数
+   * @param type
+   * @param reflectorFactory
+   */
   private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
     this.reflectorFactory = reflectorFactory;
     this.reflector = reflectorFactory.findForClass(type);
@@ -43,6 +51,11 @@ public class MetaClass {
     return new MetaClass(type, reflectorFactory);
   }
 
+  /**
+   * 通过属性名称， 获取属性的 MetaClass (解决成员变量是类的情况)
+   * @param name
+   * @return
+   */
   public MetaClass metaClassForProperty(String name) {
     Class<?> propType = reflector.getGetterType(name);
     return MetaClass.forClass(propType, reflectorFactory);
@@ -88,6 +101,12 @@ public class MetaClass {
     return getGetterType(prop);
   }
 
+  /**
+   * 在reflector中取出参数name的getter方法的返回类型propType，再将propType封装成MetaClass返回出去（装饰者模式）
+   *
+   * @param prop
+   * @return
+   */
   private MetaClass metaClassForProperty(PropertyTokenizer prop) {
     Class<?> propType = getGetterType(prop);
     return MetaClass.forClass(propType, reflectorFactory);
@@ -167,17 +186,32 @@ public class MetaClass {
     return reflector.getSetInvoker(name);
   }
 
+  /**
+   * 该类中， 最重要的方法
+   * 解析属性表达式
+   * 去寻找reflector中是否有对应的的属性
+   * @param name
+   * @param builder
+   * @return
+   */
   private StringBuilder buildProperty(String name, StringBuilder builder) {
+    // 解析属性表达式
     PropertyTokenizer prop = new PropertyTokenizer(name);
+    // 是否有子表达式
     if (prop.hasNext()) {
+      // 查找对应的属性
       String propertyName = reflector.findPropertyName(prop.getName());
       if (propertyName != null) {
+        // 追加属性名
         builder.append(propertyName);
         builder.append(".");
+        // 创建对应的 MetaClass 对象
         MetaClass metaProp = metaClassForProperty(propertyName);
+        // 解析子表达式, 递归
         metaProp.buildProperty(prop.getChildren(), builder);
       }
     } else {
+      // 根据名称查找属性
       String propertyName = reflector.findPropertyName(name);
       if (propertyName != null) {
         builder.append(propertyName);

@@ -46,6 +46,7 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
  * allows for easy mapping between property names and getter/setter methods.
  *这个类表示一组缓存的类定义信息，这些信息可以在属性名和getter/setter方法之间轻松映射。
  * Reflector是MyBatis中反射模块的基础，每个Reflector对象都对应一个类，在Reflector中缓存了反射操作需要使用的类的元信息。
+ * mybatis 中的反射主要与JavaBean相关。
  * @author Clinton Begin
  */
 public class Reflector {
@@ -57,7 +58,7 @@ public class Reflector {
   //可写属性的名称集合，可写属性就是存在相应setter方法的属性，初始值为空数组
   private final String[] writablePropertyNames;
   //记录了属性相应的setter方法，key是属性名称，value是Invoker对象，它是对setter方法对应
-  //Method对象的封装
+  //Method对象的封装，在存储方法的时候， Reflector 使用的是 Map<String, Invoker>。 而不是 Map<String, Method>。
   private final Map<String, Invoker> setMethods = new HashMap<>();
   //属性相应的getter方法集合，key是属性名称，value也是Invoker对象
   private final Map<String, Invoker> getMethods = new HashMap<>();
@@ -110,6 +111,8 @@ public class Reflector {
     resolveGetterConflicts(conflictingGetters);
   }
 
+  // 如果方法返回值是父类相同实体方法返回值类型的子类， 则就会导致两个方法是同一个方法， 但是签名不同。 因此， 需要解决此类冲突。
+  // 子类重写方法的返回类型必须与父类相同或者是父类返回类型的子类型
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
       Method winner = null;
