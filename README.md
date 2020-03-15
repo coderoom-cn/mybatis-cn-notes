@@ -55,7 +55,10 @@ Drawing[核心接口层]
 ### 接口层
 接口层相对简单，其核心是SqlSession接口，该接口中定义了MyBatis暴露给应用程序调用的API，也就是上层应用与MyBatis交互的桥梁。
 
-##调试环境
+## 调试环境
 参考 AutoConstructorTest
+
+## TODO
+1. Java-Type体系
 
 [参考01](http://)

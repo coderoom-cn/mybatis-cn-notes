@@ -26,6 +26,9 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 
 /**
+ * 工具类，java.lang.reflect.Type参数解析器。
+ * Type是Java 编程语言中所有类型的公共高级接口（官方解释），也就是Java中所有类型的“爹”；
+ * 详情请关注Java-Type体系。
  * @author Iwao AVE!
  */
 public class TypeParameterResolver {
